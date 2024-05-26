@@ -4,7 +4,7 @@ import Howitworks from './howitworks'
 import Features from './features'
 import Popup from '../PopupWindow/PopupWindow'
 import {motion} from 'framer-motion'
-const url = 'http://localhost:3000/medibuddy';
+const url = 'https://gemini-clone-azure-ten.vercel.app/medibuddy';
 
 const pageVariants = {
   hidden: {
