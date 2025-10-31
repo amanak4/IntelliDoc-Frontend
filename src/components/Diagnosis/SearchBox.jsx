@@ -1,21 +1,22 @@
-import React from 'react'
-import { FaSearch } from 'react-icons/fa';
-const SearchBox = ({searchfield,searchChange}) => {
+import { Search } from "lucide-react";
+import React from "react";
+import { Input } from "../ui/input";
+
+const SearchBox = ({ searchfield, searchChange }) => {
   return (
-    <div className='m-2 flex 
-    justify-center
-    lg:justify-end'>
-      <input 
-      className='p-3 w-10/12 lg:w-3/12 border-2 border-black rounded-full' 
-      type='search' 
-      placeholder='Search Tests'
-      onChange={searchChange}
-      />
-      <div className='bg-blue-600 relative  w-12 rounded-full  flex right-12 border-2 border-black flex justify-center items-center'>
-      <FaSearch className='text-white  h-6 w-6'/>
+    <div className="max-w-md mx-auto">
+      <div className="relative">
+        <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+        <Input
+          type="search"
+          placeholder="Search diagnostic tests..."
+          value={searchfield}
+          onChange={searchChange}
+          className="pl-10 h-12 text-lg border-2 border-gray-200 focus:border-primary rounded-full"
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SearchBox
+export default SearchBox;

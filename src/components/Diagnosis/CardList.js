@@ -1,19 +1,20 @@
-import React, { useContext } from 'react';
-import Card from './Card';
-import { Context } from '../..';
+import React, { useContext } from "react";
+import { Context } from "../..";
+import Card from "./Card";
 
 const CardList = ({ tests }) => {
-  const {user, setUser,isAuthorized,setIsAuthorized}=useContext(Context);
+  const { user, setUser, isAuthorized, setIsAuthorized } = useContext(Context);
+
   return (
-    <div className='flex flex-wrap justify-start gap-x-8 gap-y-5 lg:gap-x-12  gap-y-5  mx-7 ml-11'>
-      {tests.map((user, i) => (
-        <Card 
-          key={i} 
-          id={user.id} 
-          name={user.name} 
-          img={user.img}
-          description={user.description}
-          path={user.path}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {tests.map((test, i) => (
+        <Card
+          key={i}
+          id={test.id}
+          name={test.name}
+          img={test.img}
+          description={test.description}
+          path={isAuthorized ? test.path : "/login"}
         />
       ))}
     </div>

@@ -1,26 +1,22 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import {BrowserRouter as Router} from 'react-router-dom';
-export const Context=React.createContext({isAuthorized:false});
-const AppWrapper=()=>{
-  const [isAuthorized,setIsAuthorized]=useState(false);
-  const [user,setUser]=useState({});
-  const [profileImg,setProfileImg]=useState(null);
-  return(
-    <Context.Provider value={{isAuthorized,setIsAuthorized,user,setUser,profileImg,setProfileImg}}>
+import React, { useState } from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+export const Context = React.createContext({ isAuthorized: true });
+const AppWrapper = () => {
+  const [isAuthorized, setIsAuthorized] = useState(true);
+  const [user, setUser] = useState(null);
+
+  return (
+    <Context.Provider value={{ isAuthorized, setIsAuthorized, user, setUser }}>
       <App />
     </Context.Provider>
-  )
-}
+  );
+};
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-  <Router>
     <AppWrapper />
-    </Router>
   </React.StrictMode>
 );
-

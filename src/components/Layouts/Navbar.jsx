@@ -1,121 +1,235 @@
-import React, { useContext, useState } from 'react';
-import { BookOpenIcon, Bars3BottomRightIcon, XMarkIcon } from '@heroicons/react/24/solid'
-import './nav.css';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Context } from '../..';
-import NavLinks from './NavLinks';
-import axios from 'axios';
-import logo from '../../assests/mainlogo.png';
-import toast from 'react-hot-toast';
-import { BASE_URL } from '../../Base_url';
-import { FaAngleDown } from 'react-icons/fa';
-import {motion} from 'framer-motion';
-function Navbar() {
-    const navigateTo=useNavigate();
-    const [seeProfile,setSeeProfile]=useState(false);
-    const {isAuthorized,setIsAuthorized,user,setUser}=useContext(Context);
+import axios from "axios";
+import {
+  ChevronDown,
+  Home,
+  LogOut,
+  Menu,
+  Pill,
+  Stethoscope,
+  User,
+  X,
+} from "lucide-react";
+import React, { useContext, useState } from "react";
+import toast from "react-hot-toast";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import logo from "../../assests/mainlogo.png";
+import { BASE_URL } from "../../Base_url";
+import { Context } from "../../index.js";
+import { Button } from "../ui/button";
 
-    const location = useLocation();
-    let Links =[
-        {name:"Home",link:"/"},
-        {name:"Diagnosis",link:"/diagnosis"},
-        {name:"Medicines",link:"/medicines"},
-      ];
-      let [open, setOpen] =useState(false);
-  let username
-  if(isAuthorized){
-  username = user.name[0].toUpperCase();
+function Navbar() {
+  const navigateTo = useNavigate();
+  const [seeProfile, setSeeProfile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthorized, setIsAuthorized, user, setUser } = useContext(Context);
+
+  const location = useLocation();
+
+  const Links = [
+    { name: "Home", link: "/", icon: Home },
+    { name: "Diagnosis", link: "/diagnosis", icon: Stethoscope },
+    { name: "Medicines", link: "/medicines", icon: Pill },
+  ];
+
+  let username;
+  if (isAuthorized && user && user.name) {
+    username = user.name[0].toUpperCase();
   }
 
   const handleLogout = async () => {
-    if(!isAuthorized){
-      toast.error("The page is not yet connected to the backend. Please navigate to the homepage by changing the URL path.");
-      return ;
-      // navigateTo("/login");
-    }
     try {
-        setOpen(false);
-      const response = await axios.get(`${BASE_URL}/logout`,{withCredentials:true});
+      setMobileMenuOpen(false);
+      setSeeProfile(false);
+      const response = await axios.get(`${BASE_URL}/logout`, {
+        withCredentials: true,
+      });
       console.log(response.data);
       toast.success(response.data.message);
-      setIsAuthorized(false);
+      // Keep authentication as true - don't set to false
+      // setIsAuthorized(false);
       setUser(null);
-      // Redirect or perform any other action after successful logout
     } catch (error) {
-      console.error(error.response.data);
-      toast.error(error.response.data.message);
+      console.error(error);
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Logout failed. Please try again.");
+      }
     }
   };
 
-  return (
-    <>
-    {location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/medibuddy' || location.pathname === '/user-profile' || location.pathname === '/changePassword' ||
-    location.pathname === '/forgotPassword' ?<></>:
-    <div className='bg-white shadow-md w-full h-auto fixed top-0 left-0 z-10'>
-        <div className='shadow-md w-full fixed top-0 left-0 z-10 bg-white'>
-           <div className='md:flex items-center justify-between py-4 md:px-10 px-7 bg-white'>
-            {/* logo section */}
-            <div className='font-bold text-2xl cursor-pointer flex items-center gap-1'>
-               <Link to={'/'} className='flex items-center'> <img src={logo} className='w-7 h-7 text-blue-600'/>
-                <span>IntelliDoc</span>
-                </Link>
-            </div>
-            {/* Menu icon */}
-            <div onClick={()=>setOpen(!open)} className='absolute right-8 top-6 cursor-pointer md:hidden w-7 h-7'>
-                {
-                    open ? <XMarkIcon/> : <Bars3BottomRightIcon />
-                }
-            </div>
-            {/* linke items */}
-            <ul className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all bg-white duration-500 ease-in ${open ? 'top-12' : 'top-[-490px]'}`}>
-                {
-                    Links.map((link) => (
-                      <li className={`md:ml-8 md:my-0 my-7 font-semibold ${location.pathname === link.link ? 'underline' : ''} `}>
-                        <Link onClick={()=>setOpen(false)} to={link.link} className={`text-gray-800 hover:text-blue-600 duration-500 hover:underline  ${location.pathname === link.link ? 'text-blue-600' : ''}` }>{link.name}</Link>
-                    </li>
-                    
-                    ))
-                }
-               {!isAuthorized? <button className='btn bg-blue-600 text-white md:ml-8 font-semibold px-3 py-1 rounded duration-500 md:static' onClick={()=>navigateTo('/login')}>Get Started</button>:
-               <button className='btn bg-blue-600 text-white md:ml-8 font-semibold px-3 py-1 rounded duration-500 md:static rounded-full flex items-center justify-between'  onClick={()=>setSeeProfile(!seeProfile)}>  <span >  {username}</span> <FaAngleDown /></button>
-               }
+  // Don't show navbar on certain pages
+  const hiddenPages = [
+    "/login",
+    "/signup",
+    "/medibuddy",
+    "/user-profile",
+    "/changePassword",
+    "/forgotPassword",
+  ];
+  if (hiddenPages.includes(location.pathname)) {
+    return null;
+  }
 
-               {seeProfile&&isAuthorized?<ul initial={{opacity:0}} animate={{opacity:1}}
-               transition={{duration:0.5}}
-                className='text-sm text-start flex-col 
-                  line leading-6 block mt-3 lg:top-20 lg:right-0 lg:hidden'>
-               <li>
-               <Link className= '  text-gray-800 hover:text-blue-600 duration-500 hover:underline font-bold mb-4 text-lg' to='/user-profile' onClick={()=>setOpen(false)}>Profile</Link>
-               </li>
-               <li>
-               <Link className= '  hover:text-blue-600 duration-500 hover:underline font-bold mb-4 text-lg' to='/user-profile' onClick={()=>setOpen(false)}>Dashboard</Link>
-               </li>
-               <li><button className='btn mt-3 bg-blue-600 text-white md: font-semibold px-3 py-1  
-               duration-500 md:static rounded-full' onClick={handleLogout} >Logout</button>
-               </li>
-               </ul>:<></>}
-            </ul>
-            
-            {/* button */}
-           </div>
-           
+  return (
+    <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <img src={logo} className="w-8 h-8" alt="IntelliDoc" />
+            <span className="text-xl font-bold text-gray-900">IntelliDoc</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {Links.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.name}
+                  to={link.link}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location.pathname === link.link
+                      ? "text-primary bg-primary/10"
+                      : "text-gray-700 hover:text-primary hover:bg-gray-50"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{link.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* User Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            {!isAuthorized ? (
+              <Button
+                onClick={() => navigateTo("/login")}
+                className="bg-primary hover:bg-primary/90"
+              >
+                Get Started
+              </Button>
+            ) : (
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  onClick={() => setSeeProfile(!seeProfile)}
+                  className="flex items-center space-x-2"
+                >
+                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                    {username}
+                  </div>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+
+                {seeProfile && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border py-1 z-50">
+                    <Link
+                      to="/user-profile"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      onClick={() => setSeeProfile(false)}
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Profile</span>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </Button>
+          </div>
         </div>
-        {seeProfile&&isAuthorized?<ul className='text-sm text-start flex-col absolute top-56 z-10  bg-white line leading-6 hidden px-3 lg:top-20 right-0 lg:block'>
-               <li>
-               <Link className= '  text-gray-800 hover:text-blue-600 hover:underline duration-500 font-bold mb-4 text-lg' to='/user-profile' onClick={()=>setOpen(false)}>Profile</Link>
-               </li>
-               <li>
-               <Link className= '  text-gray-800 hover:text-blue-600 hover:underline duration-500 font-bold mb-4 text-lg' to='/user-profile' onClick={()=>setOpen(false)}>Dashboard</Link>
-               </li>
-               <li><button className='btn bg-blue-600 text-white md: font-semibold px-3 py-1 duration-500 md:static rounded-full' onClick={handleLogout}>Logout</button>
-               </li>
-               </ul>:<></>}
-        </div>
-    }
-    </>
-  )
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t bg-white">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {Links.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.name}
+                    to={link.link}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium ${
+                      location.pathname === link.link
+                        ? "text-primary bg-primary/10"
+                        : "text-gray-700 hover:text-primary hover:bg-gray-50"
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{link.name}</span>
+                  </Link>
+                );
+              })}
+
+              <div className="border-t pt-4">
+                {!isAuthorized ? (
+                  <Button
+                    onClick={() => {
+                      navigateTo("/login");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full bg-primary hover:bg-primary/90"
+                  >
+                    Get Started
+                  </Button>
+                ) : (
+                  <div className="space-y-2">
+                    <Link
+                      to="/user-profile"
+                      className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <User className="w-5 h-5" />
+                      <span>Profile</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
 }
 
-export default Navbar
-
-
+export default Navbar;

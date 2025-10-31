@@ -17,8 +17,8 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
     position: relative; /* Ensure close button is positioned relative to this container */
-    width: 22rem; /* Adjust width as needed */
-     aspect-ratio: 9 / 12; /* Adjust height as needed */
+    width: 25rem; /* Adjust width as needed */
+    height: 30rem; /* Adjust height as needed */
 }
 
 .close-btn {
@@ -36,18 +36,4 @@
 .popup-content iframe {
     width: 100%; /* Set iframe width to 100% of its container */
     height: 100%; /* Set iframe height to 100% of its container */
-}
-
-@media screen and (max-width: 768px) {
-    .popup-content{
-        width: 50vw;
-        aspect-ratio: 9/12;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .popup-content{
-        width: 70vw;
-        aspect-ratio: 3/5;
-    }
 }

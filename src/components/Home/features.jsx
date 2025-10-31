@@ -6,7 +6,7 @@ import feat4 from '../../assests/feat4.jpeg';
 import feat5 from '../../assests/feat5.jpg';
 import feat6 from '../../assests/feat6.jpg';
 import img1 from '../../assests/img1.webp';
-import { motion, spring } from 'framer-motion';
+import { motion } from 'framer-motion';
 import './home.css'
 function Features() {
 
@@ -80,10 +80,7 @@ function Features() {
                     transition={{ delay: 0.1, duration: 1.1 }}
                     
                     className='border-2 flex-col text-center  p-6 pb-8 rounded-lg shadow-custom bg-white animate-on-scroll'>
-                    <motion.img
-                     whileHover={{scale:1.1 ,boxShadow: "0 0 10px #fff"}} 
-                     transition={{type:spring, stiffness: 100}}
-                    src={feat1} alt='munna' className='w-40 h-40 border-2 border-gray-500 rounded-full mx-auto my-4 flex justify-center object-cover' />
+                    <img src={feat1} alt='munna' className='w-40 h-40 border-2 border-gray-500 rounded-full mx-auto my-4 flex justify-center object-cover' />
                     <div>
                         <h1 className='text-2xl mb-4 font-semibold'>Interactive Engagement
 </h1>

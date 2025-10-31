@@ -1,8 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { MLBASE_URL } from '../../Base_url';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { Context } from '../..';
 
 function App() {
   const initialFormData = {
@@ -56,18 +54,11 @@ function App() {
     3: 'Thalassemia',
     4: 'Thrombosis'
   };
- const {isAuthorized,setIsAuthorized}=useContext(Context);
 
 const navigateTo=useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
-    if(!isAuthorized){
-      toast.error("The page has not been integrated with the machine learning model yet.");
-      return ;
-      // navigateTo("/login");
-    }
     setLoading(true);
     try {
       const response = await fetch(`${MLBASE_URL}/predict4`, {
